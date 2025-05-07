@@ -1,113 +1,3 @@
-<!--<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claimers</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <nav>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="my-items.html">My Items</a></li>
-      <li><a href="all-items.html">All Items</a></li>
-      <li><a href="lost.html">Lost</a></li>
-      <li><a href="found.html">Found</a></li>
-      <li><a href="raise-concern.html">Raise a Concern</a></li>
-      <li><a href="helpers.html">Helpers</a></li>
-      <li><a href="claimers.html">Claimers</a></li>
-      <li><a href="index.html" onclick="localStorage.clear()">Logout</a></li>
-    </ul>
-  </nav>
-
-  <div class="container">
-    <h2>Claimers</h2>
-    <p>Welcome <strong id="userName"></strong>, here's the list of people who claimed their lost items:</p>
-
-    
-    <label for="itemFilter">Filter by Item:</label>
-    <select id="itemFilter" onchange="filterClaimers()">
-      <option value="all">All</option>
-     
-    </select>
-
-    
-    <div id="claimersContainer"></div>
-  </div>
-
-  <script>
-    document.getElementById("userName").innerText = localStorage.getItem("name") || "User";
-
-    // Fetch claimers and populate item filter
-    async function fetchClaimers() {
-      const res = await fetch('http://localhost:5000/api/claimers');
-      const data = await res.json();
-
-      if (data.claimers) {
-        displayClaimers(data.claimers);
-        populateItemFilter(data.items);
-      } else {
-        alert(data.message);
-      }
-    }
-
-    // Display claimers
-    function displayClaimers(claimers) {
-      const container = document.getElementById("claimersContainer");
-      container.innerHTML = "";
-
-      if (claimers.length === 0) {
-        container.innerHTML = "<p>No claimers found.</p>";
-        return;
-      }
-
-      claimers.forEach(claim => {
-        const div = document.createElement("div");
-        const formattedDate = new Date(claim.claimed_at).toISOString().split("T")[0];
-        div.className = "claimer-item";
-        div.innerHTML = `
-          <p><strong>Claimed By:</strong> ${claim.user_name}</p>
-          <p><strong>Item:</strong> ${claim.item_name}</p>
-          <p><strong>Claim Date:</strong> ${formattedDate}</p>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    // Populate item filter dropdown
-    function populateItemFilter(items) {
-      const filter = document.getElementById("itemFilter");
-      filter.innerHTML = "<option value='all'>All</option>";
-      
-      items.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.item_name;
-        option.innerText = item.item_name;
-        filter.appendChild(option);
-      });
-    }
-
-    // Filter claimers based on selected item
-    function filterClaimers() {
-      const selectedItem = document.getElementById("itemFilter").value;
-      const claimers = document.querySelectorAll(".claimer-item");
-      
-      claimers.forEach(claim => {
-        const itemName = claim.querySelector("p:nth-of-type(2)").innerText.replace("Item: ", "");
-        if (selectedItem === "all" || itemName === selectedItem) {
-          claim.style.display = "block";
-        } else {
-          claim.style.display = "none";
-        }
-      });
-    }
-
-    // Initial call to fetch claimers and populate items filter
-    fetchClaimers();
-  </script>
-</body>
-</html>-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -180,14 +70,16 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import BACKEND_URL from './config.js';
+
     document.getElementById("userName").innerText = localStorage.getItem("name") || "User";
 
     let allClaimers = [];
 
     async function fetchClaimers() {
       try {
-        const res = await fetch('http://localhost:5000/api/claimers');
+        const res = await fetch(`${BACKEND_URL}/api/claimers`);
         const data = await res.json();
 
         if (data.claimers) {
