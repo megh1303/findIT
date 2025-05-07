@@ -1,0 +1,187 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Claims</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="admin-dashboard.html">Dashboard</a></li>
+      <li><a href="verify-claims.html">Verify Claims</a></li>
+      <li><a href="manage-items.html">Manage Items</a></li>
+      <li><a href="concerns.html">View Concerns</a></li>
+      <li><a href="index.html" onclick="localStorage.clear()">Logout</a></li>
+    </ul>
+  </nav>
+
+  <h1>🧾 Verify Submitted Claims</h1>
+  <table id="claimsTable">
+    <thead>
+      <tr>
+        <th>Claim ID</th>
+        <th>Item Name</th>
+        <th>Category</th>
+        <th>Location</th>
+        <th>Date</th>
+        <th>User</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    fetch('http://localhost:5000/api/admin/claims')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.querySelector('#claimsTable tbody');
+        data.forEach(claim => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${claim.claim_id}</td>
+            <td>${claim.item_name}</td>
+            <td>${claim.category}</td>
+            <td>${claim.location}</td>
+            <td>${claim.date}</td>
+            <td>${claim.full_name}</td>
+            <td>${claim.email}</td>
+            <td>
+              <button onclick="updateClaim(${claim.claim_id}, 'approved')">Approve</button>
+              <button onclick="updateClaim(${claim.claim_id}, 'rejected')">Reject</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      })
+      .catch(err => {
+        console.error("Error fetching claims:", err);
+        alert("Failed to load claims.");
+      });
+
+    function updateClaim(claimId, status) {
+      fetch(`http://localhost:5000/api/admin/claims/${claimId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        location.reload();
+      })
+      .catch(err => {
+        console.error("Status update failed:", err);
+        alert("Failed to update claim status.");
+      });
+    }
+  </script>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify Claims - findIT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen flex flex-col">
+
+  <!-- Navigation -->
+  <nav class="bg-white shadow-md py-4 px-4 flex items-center">
+    <h1 class="text-xl font-bold text-blue-600 mr-4">findIT</h1>
+    <ul class="flex gap-16 text-gray-700 font-medium ml-auto">
+      <li><a href="admin-dashboard.html" class="flex items-center gap-1 hover:underline"><i class="ph ph-gauge"></i> Dashboard</a></li>
+      <li><a href="verify-claims.html" class="flex items-center gap-1 hover:underline"><i class="ph ph-check-square-offset"></i> Verify Claims</a></li>
+      <li><a href="manage-items.html" class="flex items-center gap-1 hover:underline"><i class="ph ph-archive-box"></i> Manage Items</a></li>
+      <li><a href="concerns.html" class="flex items-center gap-1 hover:underline"><i class="ph ph-warning-circle"></i> View Concerns</a></li>
+      <li class="flex items-center gap-1">
+        <i data-feather="log-out" class="w-4 h-4"></i>
+        <a href="index.html" onclick="localStorage.clear()" class="hover:text-red-500">Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">🧾 Verify Submitted Claims</h1>
+    <div class="overflow-x-auto bg-white shadow-md rounded-xl">
+      <table class="min-w-full table-auto border-collapse">
+        <thead class="bg-blue-200 text-gray-800 font-semibold">
+          <tr>
+            <th class="px-4 py-2 border">Claim ID</th>
+            <th class="px-4 py-2 border">Item Name</th>
+            <th class="px-4 py-2 border">Category</th>
+            <th class="px-4 py-2 border">Location</th>
+            <th class="px-4 py-2 border">Date</th>
+            <th class="px-4 py-2 border">User</th>
+            <th class="px-4 py-2 border">Email</th>
+            <th class="px-4 py-2 border">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="claimsTable" class="text-center text-gray-700">
+          <!-- Data will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function logout(event) {
+      event.preventDefault();
+      localStorage.clear();
+      window.location.href = '/signin.html';
+    }
+
+    fetch('http://localhost:5000/api/admin/claims')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.querySelector('#claimsTable');
+        data.forEach(claim => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="px-4 py-2 border">${claim.claim_id}</td>
+            <td class="px-4 py-2 border">${claim.item_name}</td>
+            <td class="px-4 py-2 border">${claim.category}</td>
+            <td class="px-4 py-2 border">${claim.location}</td>
+            <td class="px-4 py-2 border">${claim.date}</td>
+            <td class="px-4 py-2 border">${claim.full_name}</td>
+            <td class="px-4 py-2 border">${claim.email}</td>
+            <td class="px-4 py-2 border space-x-2">
+              <button onclick="updateClaim(${claim.claim_id}, 'approved')" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Approve</button>
+              <button onclick="updateClaim(${claim.claim_id}, 'rejected')" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Reject</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      })
+      .catch(err => {
+        console.error("Error fetching claims:", err);
+        alert("Failed to load claims.");
+      });
+
+    function updateClaim(claimId, status) {
+      fetch(`http://localhost:5000/api/admin/claims/${claimId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        location.reload();
+      })
+      .catch(err => {
+        console.error("Status update failed:", err);
+        alert("Failed to update claim status.");
+      });
+    }
+  </script>
+</body>
+</html>
+

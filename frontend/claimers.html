@@ -1,0 +1,253 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claimers</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="my-items.html">My Items</a></li>
+      <li><a href="all-items.html">All Items</a></li>
+      <li><a href="lost.html">Lost</a></li>
+      <li><a href="found.html">Found</a></li>
+      <li><a href="raise-concern.html">Raise a Concern</a></li>
+      <li><a href="helpers.html">Helpers</a></li>
+      <li><a href="claimers.html">Claimers</a></li>
+      <li><a href="index.html" onclick="localStorage.clear()">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2>Claimers</h2>
+    <p>Welcome <strong id="userName"></strong>, here's the list of people who claimed their lost items:</p>
+
+    
+    <label for="itemFilter">Filter by Item:</label>
+    <select id="itemFilter" onchange="filterClaimers()">
+      <option value="all">All</option>
+     
+    </select>
+
+    
+    <div id="claimersContainer"></div>
+  </div>
+
+  <script>
+    document.getElementById("userName").innerText = localStorage.getItem("name") || "User";
+
+    // Fetch claimers and populate item filter
+    async function fetchClaimers() {
+      const res = await fetch('http://localhost:5000/api/claimers');
+      const data = await res.json();
+
+      if (data.claimers) {
+        displayClaimers(data.claimers);
+        populateItemFilter(data.items);
+      } else {
+        alert(data.message);
+      }
+    }
+
+    // Display claimers
+    function displayClaimers(claimers) {
+      const container = document.getElementById("claimersContainer");
+      container.innerHTML = "";
+
+      if (claimers.length === 0) {
+        container.innerHTML = "<p>No claimers found.</p>";
+        return;
+      }
+
+      claimers.forEach(claim => {
+        const div = document.createElement("div");
+        const formattedDate = new Date(claim.claimed_at).toISOString().split("T")[0];
+        div.className = "claimer-item";
+        div.innerHTML = `
+          <p><strong>Claimed By:</strong> ${claim.user_name}</p>
+          <p><strong>Item:</strong> ${claim.item_name}</p>
+          <p><strong>Claim Date:</strong> ${formattedDate}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Populate item filter dropdown
+    function populateItemFilter(items) {
+      const filter = document.getElementById("itemFilter");
+      filter.innerHTML = "<option value='all'>All</option>";
+      
+      items.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.item_name;
+        option.innerText = item.item_name;
+        filter.appendChild(option);
+      });
+    }
+
+    // Filter claimers based on selected item
+    function filterClaimers() {
+      const selectedItem = document.getElementById("itemFilter").value;
+      const claimers = document.querySelectorAll(".claimer-item");
+      
+      claimers.forEach(claim => {
+        const itemName = claim.querySelector("p:nth-of-type(2)").innerText.replace("Item: ", "");
+        if (selectedItem === "all" || itemName === selectedItem) {
+          claim.style.display = "block";
+        } else {
+          claim.style.display = "none";
+        }
+      });
+    }
+
+    // Initial call to fetch claimers and populate items filter
+    fetchClaimers();
+  </script>
+</body>
+</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Claimers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center">
+    <ul class="flex flex-wrap gap-16 text-gray-700 font-medium">
+      <h1 class="text-xl font-bold text-blue-600">findIT</h1>
+      <li class="flex items-center gap-1">
+        <i data-feather="home" class="w-4 h-4"></i>
+        <a href="index.html" class="hover:text-blue-500">Home</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="grid" class="w-4 h-4"></i>
+        <a href="my-items.html" class="hover:text-blue-500">My Items</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="box" class="w-4 h-4"></i>
+        <a href="all-items.html" class="hover:text-blue-500">All Items</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="alert-triangle" class="w-4 h-4"></i>
+        <a href="lost.html" class="hover:text-blue-500">Lost</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="search" class="w-4 h-4"></i>
+        <a href="found.html" class="hover:text-blue-500">Found</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="edit-3" class="w-4 h-4"></i>
+        <a href="raise-concern.html" class="hover:text-blue-500">Raise a Concern</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="users" class="w-4 h-4"></i>
+        <a href="helpers.html" class="hover:text-blue-500">Helpers</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="user-check" class="w-4 h-4 text-blue-600"></i>
+        <a href="claimers.html" class="text-blue-600 font-semibold">Claimers</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="log-out" class="w-4 h-4"></i>
+        <a href="index.html" onclick="localStorage.clear()" class="hover:text-red-500">Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Container -->
+  <div class="max-w-4xl mx-auto p-6">
+    <h2 class="text-2xl font-bold mb-2">Claimers</h2>
+    <p class="mb-4">Welcome <strong id="userName" class="text-blue-600"></strong>, here's the list of people who claimed their lost items:</p>
+
+    <!-- Item Filter Dropdown -->
+    <label for="itemFilter" class="text-lg">Filter by Item:</label>
+    <select id="itemFilter" onchange="filterClaimers()" class="mb-6 border-2 border-gray-300 p-2 rounded-md">
+      <option value="all">All</option>
+      <!-- Dynamic item options will be added here -->
+    </select>
+
+    <!-- Claimers List -->
+    <div id="claimersContainer" class="space-y-4">
+      <!-- Dynamic content will be loaded here -->
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("userName").innerText = localStorage.getItem("name") || "User";
+
+    let allClaimers = [];
+
+    async function fetchClaimers() {
+      try {
+        const res = await fetch('http://localhost:5000/api/claimers');
+        const data = await res.json();
+
+        if (data.claimers) {
+          allClaimers = data.claimers;
+          displayClaimers(allClaimers);
+          populateItemFilter(data.items);
+        } else {
+          document.getElementById("claimersContainer").innerHTML = "<p class='text-gray-600'>No claimers found.</p>";
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById("claimersContainer").innerHTML = "<p class='text-gray-600'>Failed to load data.</p>";
+      }
+    }
+
+    function displayClaimers(claimers) {
+      const container = document.getElementById("claimersContainer");
+      container.innerHTML = "";
+
+      if (claimers.length === 0) {
+        container.innerHTML = "<p class='text-gray-600'>No matching claimers.</p>";
+        return;
+      }
+
+      claimers.forEach(claim => {
+        const div = document.createElement("div");
+        const formattedDate = new Date(claim.claimed_at).toISOString().split("T")[0];
+        div.className = "bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 claimer-item";
+        div.innerHTML = `
+          <p><strong>Claimed By:</strong> ${claim.user_name}</p>
+          <p><strong>Item:</strong> ${claim.item_name}</p>
+          <p><strong>Claim Date:</strong> ${formattedDate}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function populateItemFilter(items) {
+      const filter = document.getElementById("itemFilter");
+      filter.innerHTML = "<option value='all'>All</option>";
+
+      items.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.item_name;
+        option.innerText = item.item_name;
+        filter.appendChild(option);
+      });
+    }
+
+    function filterClaimers() {
+      const selectedItem = document.getElementById("itemFilter").value;
+      const filtered = selectedItem === "all" 
+        ? allClaimers 
+        : allClaimers.filter(claim => claim.item_name === selectedItem);
+      displayClaimers(filtered);
+    }
+
+    fetchClaimers();
+    feather.replace();
+  </script>
+
+</body>
+</html>

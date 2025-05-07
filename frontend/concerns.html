@@ -1,0 +1,202 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Concerns - Admin | findIT</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .concern {
+      border: 1px solid #ccc;
+      padding: 16px;
+      margin: 16px 0;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+    .concern img {
+      max-width: 150px;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+    .btn-group button {
+      margin-right: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .approve { background: #4CAF50; color: white; }
+    .reject { background: #f44336; color: white; }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="admin-dashboard.html">Dashboard</a></li>
+      <li><a href="verify-claims.html">Verify Claims</a></li>
+      <li><a href="manage-items.html">Manage Items</a></li>
+      <li><a href="concerns.html">View Concerns</a></li>
+      <li><a href="index.html" onclick="localStorage.clear()">Logout</a></li>
+    </ul>
+  </nav>
+  <h1>View All Concerns</h1>
+  <div id="concernsContainer"></div>
+
+  <script>
+    fetch('http://localhost:5000/api/admin/concerns')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('concernsContainer');
+
+        data.forEach(concern => {
+          const div = document.createElement('div');
+          div.className = 'concern';
+
+          let imageHTML = '';
+          if (concern.image) {
+            const imagePath = `http://localhost:5000${concern.image}`;
+            console.log('Image Path:', imagePath);  // Debugging line
+            imageHTML = `<img src="${imagePath}" alt="Item Image">`;
+          }
+
+          div.innerHTML = `
+            <h3>${concern.item_name} (${concern.item_type})</h3>
+            <p><strong>Reported by:</strong> ${concern.full_name} (${concern.email})</p>
+            <p><strong>Category:</strong> ${concern.category}</p>
+            <p><strong>Date:</strong> ${concern.date}</p>
+            <p><strong>Location:</strong> ${concern.location}</p>
+            <p><strong>Description:</strong> ${concern.description}</p>
+            <p><strong>Status:</strong> ${concern.status}</p>
+            ${imageHTML}
+            ${concern.status === 'pending' ? `
+              <div class="btn-group">
+                <button class="approve" onclick="updateStatus(${concern.id}, 'approved')">Approve</button>
+                <button class="reject" onclick="updateStatus(${concern.id}, 'rejected')">Reject</button>
+              </div>` : ''}
+          `;
+
+          container.appendChild(div);
+        });
+      })
+      .catch(err => {
+        console.error('Error fetching concerns:', err);
+        alert('Failed to load concerns');
+      });
+
+    function updateStatus(id, status) {
+      fetch(`http://localhost:5000/api/admin/concerns/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        location.reload(); // Reload to reflect status update
+      })
+      .catch(err => {
+        console.error('Error updating status:', err);
+        alert('Failed to update status');
+      });
+    }
+  </script>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View Concerns - Admin | findIT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen flex flex-col">
+
+  <!-- Navigation -->
+  <nav class="bg-white shadow-md py-4 px-4 flex items-center">
+    <h1 class="text-xl font-bold text-blue-600 mr-4">findIT</h1>
+    <ul class="flex gap-16 text-gray-700 font-medium ml-auto">
+      <li><a href="admin-dashboard.html" class="flex items-center gap-1 hover:underline"><i class="ph ph-gauge"></i> Dashboard</a></li>
+      <li><a href="verify-claims.html" class="flex items-center gap-1 hover:underline"><i class="ph ph-check-square-offset"></i> Verify Claims</a></li>
+      <li><a href="manage-items.html" class="flex items-center gap-1 hover:underline"><i class="ph ph-archive-box"></i> Manage Items</a></li>
+      <li><a href="concerns.html" class="flex items-center gap-1 hover:underline"><i class="ph ph-warning-circle"></i> View Concerns</a></li>
+      <li class="flex items-center gap-1">
+        <i data-feather="log-out" class="w-4 h-4"></i>
+        <a href="index.html" onclick="localStorage.clear()" class="hover:text-red-500">Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Header -->
+  <div class="container mx-auto px-4 py-6">
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">📩 View All Concerns</h1>
+    <div id="concernsContainer" class="space-y-6"></div>
+  </div>
+
+  <script>
+    function logout(event) {
+      event.preventDefault();
+      localStorage.clear();
+      window.location.href = '/signin.html';
+    }
+
+    fetch('http://localhost:5000/api/admin/concerns')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('concernsContainer');
+
+        data.forEach(concern => {
+          const div = document.createElement('div');
+          div.className = 'bg-white shadow-md rounded-xl p-6 border border-gray-200';
+
+          let imageHTML = '';
+          if (concern.image) {
+            const imagePath = `http://localhost:5000${concern.image}`;
+            imageHTML = `<img src="${imagePath}" alt="Item Image" class="mt-4 rounded-lg max-w-xs">`;
+          }
+
+          div.innerHTML = `
+            <h3 class="text-xl font-bold text-indigo-700 mb-2">${concern.item_name} (${concern.item_type})</h3>
+            <p><strong class="text-gray-700">Reported by:</strong> ${concern.full_name} (${concern.email})</p>
+            <p><strong class="text-gray-700">Category:</strong> ${concern.category}</p>
+            <p><strong class="text-gray-700">Date:</strong> ${concern.date}</p>
+            <p><strong class="text-gray-700">Location:</strong> ${concern.location}</p>
+            <p><strong class="text-gray-700">Description:</strong> ${concern.description}</p>
+            <p><strong class="text-gray-700">Status:</strong> <span class="font-semibold">${concern.status}</span></p>
+            ${imageHTML}
+            ${concern.status === 'pending' ? `
+              <div class="mt-4 flex gap-4">
+                <button onclick="updateStatus(${concern.id}, 'approved')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md shadow">Approve</button>
+                <button onclick="updateStatus(${concern.id}, 'rejected')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md shadow">Reject</button>
+              </div>` : ''}
+          `;
+
+          container.appendChild(div);
+        });
+      })
+      .catch(err => {
+        console.error('Error fetching concerns:', err);
+        alert('Failed to load concerns');
+      });
+
+    function updateStatus(id, status) {
+      fetch(`http://localhost:5000/api/admin/concerns/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        location.reload();
+      })
+      .catch(err => {
+        console.error('Error updating status:', err);
+        alert('Failed to update status');
+      });
+    }
+  </script>
+</body>
+</html>
+

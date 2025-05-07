@@ -1,0 +1,155 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - findIT</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="my-items.html">My Items</a></li>
+      <li><a href="all-items.html">All Items</a></li>
+      <li><a href="lost.html">Lost</a></li>
+      <li><a href="found.html">Found</a></li>
+      <li><a href="raise-concern.html">Raise a Concern</a></li>
+      <li><a href="helpers.html">Helpers</a></li>
+      <li><a href="claimers.html">Claimers</a></li>
+      <li><a href="#" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
+
+  
+  <div class="container">
+    <h2>Welcome to findIT </h2>
+    <p>Welcome <strong id="userName"></strong>, proceed to raising a concern.</p>
+    <button onclick="window.location.href='raise-concern.html'">Raise</button>
+  </div>
+
+
+  
+  
+    <h3>Recent Activity</h3>
+    <ul id="activityList"></ul>
+  </div> 
+
+  <script>
+    const name = localStorage.getItem("name");
+    const userId = localStorage.getItem("userId");
+
+    // Redirect if not logged in
+    if (!name || !userId) {
+      window.location.href = "signin.html";
+    } else {
+      document.getElementById("userName").innerText = name;
+    }
+
+    // Logout function
+    function logout() {
+      if (confirm("Are you sure you want to logout?")) {
+        localStorage.clear();
+        window.location.href = "index.html";
+      }
+    }
+  </script>
+
+</body>
+</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - findIT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen flex flex-col">
+
+  <!-- Navigation Bar -->
+  <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-blue-600">findIT</h1>
+    <ul class="flex flex-wrap gap-16 text-gray-700 font-medium">
+      <li class="flex items-center gap-1">
+        <i data-feather="home" class="w-4 h-4"></i>
+        <a href="index.html" class="hover:text-blue-500">Home</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="grid" class="w-4 h-4"></i>
+        <a href="my-items.html" class="hover:text-blue-500">My Items</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="box" class="w-4 h-4"></i>
+        <a href="all-items.html" class="hover:text-blue-500">All Items</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="alert-triangle" class="w-4 h-4"></i>
+        <a href="lost.html" class="hover:text-blue-500">Lost</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="search" class="w-4 h-4"></i>
+        <a href="found.html" class="hover:text-blue-500">Found</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="edit-3" class="w-4 h-4"></i>
+        <a href="raise-concern.html" class="hover:text-blue-500">Raise a Concern</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="users" class="w-4 h-4"></i>
+        <a href="helpers.html" class="hover:text-blue-500">Helpers</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="user-check" class="w-4 h-4"></i>
+        <a href="claimers.html" class="hover:text-blue-500">Claimers</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="log-out" class="w-4 h-4"></i>
+        <a href="#" onclick="logout()" class="hover:text-red-500">Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Welcome Section -->
+  <div class="flex-grow flex items-center justify-center px-4">
+    <div class="w-full max-w-xl bg-white rounded-2xl shadow-xl p-8 mt-10 text-center">
+      <h2 class="text-3xl font-bold text-blue-600 mb-4 flex items-center justify-center gap-2">
+        <i data-feather="smile" class="w-7 h-7"></i> Welcome to findIT
+      </h2>
+      <p class="text-gray-700 text-lg mb-6">Welcome <strong id="userName" class="text-blue-600"></strong>, proceed to raising a concern.</p>
+      <div class="flex justify-center">
+        <button onclick="window.location.href='raise-concern.html'"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-300 flex items-center gap-2">
+          <i data-feather="plus-circle" class="w-4 h-4"></i> Raise
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white text-center py-4 text-gray-500 text-sm shadow-inner">
+    © 2025 findIT. All rights reserved.
+  </footer>
+
+  <script>
+    feather.replace();
+
+    const name = localStorage.getItem("name");
+    const userId = localStorage.getItem("userId");
+
+    if (!name || !userId) {
+      window.location.href = "signin.html";
+    } else {
+      document.getElementById("userName").innerText = name;
+    }
+
+    function logout() {
+      if (confirm("Are you sure you want to logout?")) {
+        localStorage.clear();
+        window.location.href = "index.html";
+      }
+    }
+  </script>
+</body>
+</html>

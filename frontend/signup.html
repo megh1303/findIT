@@ -1,0 +1,264 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up - findIT</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="signup.html">Sign Up</a></li>
+      <li><a href="signin.html">Sign In</a></li>
+    </ul>
+  </nav>
+
+  <div class="form-container">
+    <h2>Sign Up</h2>
+    <form onsubmit="handleSignUp(event)" autocomplete="on">
+      <input type="text" id="name" placeholder="Name" required autocomplete="name">
+      <input type="text" id="roll" placeholder="Roll No" required autocomplete="off">
+      <input type="email" id="email" placeholder="Email" required autocomplete="email">
+
+      <div style="position: relative;">
+        <input type="password" id="password" placeholder="Password" required autocomplete="new-password">
+        <i class="fa-solid fa-eye" onclick="togglePassword('password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
+      </div>
+
+      <div style="position: relative;">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required autocomplete="new-password">
+        <i class="fa-solid fa-eye" onclick="togglePassword('confirmPassword', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
+      </div>
+
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+
+  <script>
+    async function handleSignUp(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const roll = document.getElementById("roll").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (!name || !roll || !email || !password || !confirmPassword) {
+        alert("Please enter all details.");
+        return;
+      }
+
+      // Updated password validation
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
+
+      if (!passwordRegex.test(password)) {
+        alert("Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, one number, and one special character.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ full_name: name, email, password })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem("name", name);
+          localStorage.setItem("roll", roll);
+          alert(data.message || "User signed up successfully.");
+          window.location.href = "signin.html";
+        } else {
+          alert(data.message || "Signup failed.");
+        }
+      } catch (err) {
+        alert("Server error. Try again later.");
+      }
+    }
+
+    function togglePassword(id, icon) {
+      const input = document.getElementById(id);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    }
+  </script>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up - findIT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen flex flex-col">
+
+  <!-- Navigation Bar -->
+  <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-blue-600 flex items-center gap-2">
+      <i data-feather="search" class="w-5 h-5 text-blue-600"></i> findIT
+    </h1>
+    <ul class="flex space-x-6 text-gray-700 font-medium">
+      <li class="flex items-center gap-1">
+        <i data-feather="home" class="w-4 h-4 text-gray-700"></i>
+        <a href="index.html" class="hover:text-blue-500">Home</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="user-plus" class="w-4 h-4 text-gray-700"></i>
+        <a href="signup.html" class="hover:text-blue-500">Sign Up</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="log-in" class="w-4 h-4 text-gray-700"></i>
+        <a href="signin.html" class="hover:text-blue-500">Sign In</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Sign Up Form -->
+  <div class="flex-grow flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
+      <h2 class="text-3xl font-bold text-center text-blue-600 mb-6 flex items-center justify-center gap-2">
+        <i data-feather="user-plus" class="w-7 h-7 text-blue-600"></i> Sign Up
+      </h2>
+
+      <form onsubmit="handleSignUp(event)" class="space-y-4">
+        <div>
+          <label for="name" class="block text-gray-700 font-medium">Name</label>
+          <div class="relative mt-1">
+            <input type="text" id="name" placeholder="Name" required
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <i data-feather="user" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></i>
+          </div>
+        </div>
+
+        <div>
+          <label for="roll" class="block text-gray-700 font-medium">Roll No</label>
+          <div class="relative mt-1">
+            <input type="text" id="roll" placeholder="Roll No" required
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <i data-feather="hash" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></i>
+          </div>
+        </div>
+
+        <div>
+          <label for="email" class="block text-gray-700 font-medium">Email</label>
+          <div class="relative mt-1">
+            <input type="email" id="email" placeholder="Email" required
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <i data-feather="mail" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></i>
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-gray-700 font-medium">Password</label>
+          <div class="relative mt-1">
+            <input type="password" id="password" placeholder="Password" required
+                   class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <i data-feather="lock" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></i>
+            <i data-feather="eye" onclick="togglePassword('password', this)" 
+               class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 cursor-pointer w-4 h-4"></i>
+          </div>
+        </div>
+
+        <div>
+          <label for="confirmPassword" class="block text-gray-700 font-medium">Confirm Password</label>
+          <div class="relative mt-1">
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" required
+                   class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <i data-feather="lock" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></i>
+            <i data-feather="eye" onclick="togglePassword('confirmPassword', this)" 
+               class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 cursor-pointer w-4 h-4"></i>
+          </div>
+        </div>
+
+        <button type="submit"
+                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition duration-300 flex items-center justify-center gap-2">
+          <i data-feather="user-plus" class="w-4 h-4"></i> Sign Up
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white text-center py-4 text-gray-500 text-sm shadow-inner flex justify-center items-center gap-2">
+    <i data-feather="copyright" class="w-4 h-4 text-gray-400"></i> 2025 findIT. All rights reserved.
+  </footer>
+
+  <script>
+    feather.replace();
+
+    async function handleSignUp(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const roll = document.getElementById("roll").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (!name || !roll || !email || !password || !confirmPassword) {
+        alert("Please enter all details.");
+        return;
+      }
+
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
+
+      if (!passwordRegex.test(password)) {
+        alert("Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, one number, and one special character.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ full_name: name, email, password })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem("name", name);
+          localStorage.setItem("roll", roll);
+          alert(data.message || "User signed up successfully.");
+          window.location.href = "signin.html";
+        } else {
+          alert(data.message || "Signup failed.");
+        }
+      } catch (err) {
+        alert("Server error. Try again later.");
+      }
+    }
+
+    function togglePassword(id, icon) {
+      const input = document.getElementById(id);
+      const isPassword = input.type === "password";
+      input.type = isPassword ? "text" : "password";
+      icon.setAttribute("data-feather", isPassword ? "eye-off" : "eye");
+      feather.replace();
+    }
+  </script>
+</body>
+</html>

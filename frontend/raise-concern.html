@@ -1,0 +1,250 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raise a Concern</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="my-items.html">My Items</a></li>
+      <li><a href="all-items.html">All Items</a></li>
+      <li><a href="lost.html">Lost</a></li>
+      <li><a href="found.html">Found</a></li>
+      <li><a href="raise-concern.html">Raise a Concern</a></li>
+      <li><a href="helpers.html">Helpers</a></li>
+      <li><a href="claimers.html">Claimers</a></li>
+      <li><a href="index.html" onclick="localStorage.clear()">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2>Raise a Concern</h2>
+    <p>Welcome <strong id="userName"></strong>, please report a lost/found item:</p>
+
+    <form id="concernForm" enctype="multipart/form-data" method="POST">
+      <input type="text" name="item_name" placeholder="Item Name" required><br>
+      <input type="text" name="category" placeholder="Category" required><br>
+      <input type="date" name="date" required><br>
+      <input type="text" name="location" placeholder="Location" required><br>
+      <textarea name="description" placeholder="Description" required></textarea><br>
+      
+      
+      <label for="itemType">Item Type:</label>
+      <select name="itemType" required>
+        <option value="lost">Lost</option>
+        <option value="found">Found</option>
+      </select><br>
+
+      <input type="file" name="image" accept="image/*" required><br>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    const userName = localStorage.getItem("name") || "User";
+    const userEmail = localStorage.getItem("email");
+
+    document.getElementById("userName").innerText = userName;
+
+    const form = document.getElementById("concernForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      formData.append("email", userEmail); // Email is used to find user_id in backend
+
+      try {
+        const response = await fetch("http://localhost:5000/api/raise-concern", {
+          method: "POST",
+          body: formData
+        });
+
+        const contentType = response.headers.get("content-type");
+
+        if (!response.ok) {
+          const text = await response.text();
+          console.error("Server error:", text);
+          alert("Submission failed: " + response.status);
+          return;
+        }
+
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          alert(data.message);
+          form.reset();
+        } else {
+          const text = await response.text();
+          console.warn("Expected JSON but got:", text);
+          alert("Unexpected response from server.");
+        }
+      } catch (err) {
+        alert("Something went wrong.");
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
+-->
+<!-- Form -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raise a Concern</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center">
+    <ul class="flex flex-wrap gap-16 text-gray-700 font-medium">
+      <h1 class="text-xl font-bold text-blue-600">findIT</h1>
+      <li class="flex items-center gap-1">
+        <i data-feather="home" class="w-4 h-4"></i>
+        <a href="index.html" class="hover:text-blue-500">Home</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="grid" class="w-4 h-4"></i>
+        <a href="my-items.html" class="hover:text-blue-500">My Items</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="box" class="w-4 h-4"></i>
+        <a href="all-items.html" class="hover:text-blue-500">All Items</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="alert-triangle" class="w-4 h-4"></i>
+        <a href="lost.html" class="hover:text-blue-500">Lost</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="search" class="w-4 h-4"></i>
+        <a href="found.html" class="hover:text-blue-500">Found</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="edit-3" class="w-4 h-4"></i>
+        <a href="raise-concern.html" class="hover:text-blue-500">Raise a Concern</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="users" class="w-4 h-4"></i>
+        <a href="helpers.html" class="hover:text-blue-500">Helpers</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="user-check" class="w-4 h-4"></i>
+        <a href="claimers.html" class="hover:text-blue-500">Claimers</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="log-out" class="w-4 h-4"></i>
+        <a href="index.html" onclick="localStorage.clear()" class="hover:text-red-500">Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Container -->
+  <div class="max-w-4xl mx-auto p-6">
+    <h2 class="text-2xl font-bold mb-2">Raise a Concern</h2>
+    <p class="mb-4">Welcome <strong id="userName" class="text-blue-600"></strong>, please report a lost/found item:</p>
+
+    <!-- Form -->
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+      <form id="concernForm" enctype="multipart/form-data" method="POST" class="space-y-4">
+        <div class="flex items-center border border-gray-300 rounded-lg">
+          <i class="fas fa-tag p-3 text-gray-600"></i>
+          <input type="text" name="item_name" placeholder="Item Name" required class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        
+        <div class="flex items-center border border-gray-300 rounded-lg">
+          <i class="fas fa-cogs p-3 text-gray-600"></i>
+          <input type="text" name="category" placeholder="Category" required class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div class="flex items-center border border-gray-300 rounded-lg">
+          <i class="fas fa-calendar p-3 text-gray-600"></i>
+          <input type="date" name="date" required class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div class="flex items-center border border-gray-300 rounded-lg">
+          <i class="fas fa-map-marker-alt p-3 text-gray-600"></i>
+          <input type="text" name="location" placeholder="Location" required class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div class="flex items-center border border-gray-300 rounded-lg">
+          <i class="fas fa-pencil-alt p-3 text-gray-600"></i>
+          <textarea name="description" placeholder="Description" required class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+
+        <!-- Add Item Type Dropdown -->
+        <label for="itemType" class="block font-medium">Item Type:</label>
+        <select name="itemType" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="lost">Lost</option>
+          <option value="found">Found</option>
+        </select>
+
+        <div class="flex items-center border border-gray-300 rounded-lg">
+          <i class="fas fa-image p-3 text-gray-600"></i>
+          <input type="file" name="image" accept="image/*" required class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    feather.replace(); // This replaces all "data-feather" attributes with SVG icons
+
+    const userName = localStorage.getItem("name") || "User";
+    const userEmail = localStorage.getItem("email");
+
+    document.getElementById("userName").innerText = userName;
+
+    const form = document.getElementById("concernForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      formData.append("email", userEmail); // Email is used to find user_id in backend
+
+      try {
+        const response = await fetch("http://localhost:5000/api/raise-concern", {
+          method: "POST",
+          body: formData
+        });
+
+        const contentType = response.headers.get("content-type");
+
+        if (!response.ok) {
+          const text = await response.text();
+          console.error("Server error:", text);
+          alert("Submission failed: " + response.status);
+          return;
+        }
+
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          alert(data.message);
+          form.reset();
+        } else {
+          const text = await response.text();
+          console.warn("Expected JSON but got:", text);
+          alert("Unexpected response from server.");
+        }
+      } catch (err) {
+        alert("Something went wrong.");
+        console.error(err);
+      }
+    });
+  </script>
+
+</body>
+</html>

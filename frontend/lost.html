@@ -1,0 +1,310 @@
+<!--<!DOCTYPE html>
+<html>
+<head>
+  <title>Lost Items</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="my-items.html">My Items</a></li>
+      <li><a href="all-items.html">All Items</a></li>
+      <li><a href="lost.html">Lost</a></li>
+      <li><a href="found.html">Found</a></li>
+      <li><a href="raise-concern.html">Raise a Concern</a></li>
+      <li><a href="helpers.html">Helpers</a></li>
+      <li><a href="claimers.html">Claimers</a></li>
+      <li><a href="index.html" onclick="localStorage.clear()">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2>Lost Items</h2>
+    <p>Welcome <strong id="userName"></strong>, these are items reported as lost:</p>
+
+    
+    <input type="text" id="searchInput" placeholder="Search items..." oninput="fetchLostItems()">
+    <select id="categoryFilter" onchange="fetchLostItems()">
+      <option value="">Filter by category</option>
+      <option value="electronics">Electronics</option>
+      <option value="clothing">Clothing</option>
+      <option value="books">Books</option>
+      
+    </select>
+
+    <select id="sortBy" onchange="fetchLostItems()">
+      <option value="date_desc">Sort by Date (Newest First)</option>
+      <option value="date_asc">Sort by Date (Oldest First)</option>
+      <option value="name_asc">Sort by Name (A-Z)</option>
+      <option value="name_desc">Sort by Name (Z-A)</option>
+    </select>
+
+    
+    <div id="lostItemsContainer" class="items-container"></div>
+
+    
+    <div id="paginationControls"></div>
+  </div>
+
+  <script>
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    document.getElementById("userName").innerText = localStorage.getItem("name") || "User";
+
+    async function fetchLostItems() {
+      const search = document.getElementById("searchInput").value;
+      const category = document.getElementById("categoryFilter").value;
+      const sortBy = document.getElementById("sortBy").value;
+
+      const url = new URL("http://localhost:5000/api/lost-items");
+      const params = {
+        search,
+        category,
+        sortBy,
+        page: currentPage,
+        limit: itemsPerPage
+      };
+      url.search = new URLSearchParams(params).toString();
+
+      try {
+        const response = await fetch(url);
+        const items = await response.json();
+        displayItems(items);
+      } catch (err) {
+        console.error("Error fetching lost items:", err);
+      }
+    }
+
+    function displayItems(items) {
+      const container = document.getElementById("lostItemsContainer");
+      if (!items.length) {
+        container.innerHTML = "<p>No lost items found.</p>";
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="item-card">
+          <h3>${item.item_name}</h3>
+          <p><strong>Category:</strong> ${item.category}</p>
+          <p><strong>Date:</strong> ${item.date}</p>
+          <p><strong>Location:</strong> ${item.location}</p>
+          <p><strong>Description:</strong> ${item.description}</p>
+          <img src="http://localhost:5000${item.image}" alt="${item.item_name}" class="item-image"/>
+        </div>
+      `).join("");
+
+      setupPagination();
+    }
+
+    function setupPagination() {
+      const paginationContainer = document.getElementById("paginationControls");
+      paginationContainer.innerHTML = `
+        <button onclick="changePage(-1)">Previous</button>
+        <span>Page ${currentPage}</span>
+        <button onclick="changePage(1)">Next</button>
+      `;
+    }
+
+    function changePage(direction) {
+      currentPage += direction;
+      if (currentPage < 1) currentPage = 1; // Prevent going to negative page
+      fetchLostItems();
+    }
+
+    fetchLostItems();
+  </script>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lost Items - findIT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    .item-card {
+      background-color: white;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    .item-image {
+      max-width: 200px;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+    .filters select,
+    .filters input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+    }
+    .pagination-btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin: 0 10px;
+      cursor: pointer;
+    }
+    .pagination-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen">
+
+  <!-- Navigation Bar -->
+  <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center">
+    <ul class="flex flex-wrap gap-16 text-gray-700 font-medium">
+      <h1 class="text-xl font-bold text-blue-600">findIT</h1>
+      <li class="flex items-center gap-1">
+        <i data-feather="home" class="w-4 h-4"></i>
+        <a href="index.html" class="hover:text-blue-500">Home</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="grid" class="w-4 h-4"></i>
+        <a href="my-items.html" class="hover:text-blue-500">My Items</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="box" class="w-4 h-4"></i>
+        <a href="all-items.html" class="hover:text-blue-500">All Items</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="alert-triangle" class="w-4 h-4"></i>
+        <a href="lost.html" class="hover:text-blue-500">Lost</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="search" class="w-4 h-4"></i>
+        <a href="found.html" class="hover:text-blue-500">Found</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="edit-3" class="w-4 h-4"></i>
+        <a href="raise-concern.html" class="hover:text-blue-500">Raise a Concern</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="users" class="w-4 h-4"></i>
+        <a href="helpers.html" class="hover:text-blue-500">Helpers</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="user-check" class="w-4 h-4"></i>
+        <a href="claimers.html" class="hover:text-blue-500">Claimers</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="log-out" class="w-4 h-4"></i>
+        <a href="index.html" onclick="localStorage.clear()" class="hover:text-red-500">Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-6 py-8">
+    <h2 class="text-3xl font-bold text-center text-blue-700 mb-6">Lost Items</h2>
+    <p class="text-lg text-center text-gray-700 mb-6">Welcome <strong id="userName"></strong>, these are items reported as lost:</p>
+
+    <!-- Filters -->
+    <div class="filters mb-6 flex flex-wrap justify-center gap-6">
+      <input type="text" id="searchInput" placeholder="Search items..." oninput="fetchLostItems()" class="border border-gray-300 rounded-lg px-4 py-2">
+      
+      <select id="categoryFilter" onchange="fetchLostItems()" class="border border-gray-300 rounded-lg px-4 py-2">
+        <option value="">Filter by category</option>
+        <option value="electronics">Electronics</option>
+        <option value="clothing">Clothing</option>
+        <option value="books">Books</option>
+        <!-- Add more categories as necessary -->
+      </select>
+
+      <select id="sortBy" onchange="fetchLostItems()" class="border border-gray-300 rounded-lg px-4 py-2">
+        <option value="date_desc">Sort by Date (Newest First)</option>
+        <option value="date_asc">Sort by Date (Oldest First)</option>
+        <option value="name_asc">Sort by Name (A-Z)</option>
+        <option value="name_desc">Sort by Name (Z-A)</option>
+      </select>
+    </div>
+
+    <!-- Lost items container -->
+    <div id="lostItemsContainer" class="space-y-6"></div>
+
+    <!-- Pagination Controls -->
+    <div id="paginationControls" class="flex justify-center items-center mt-8"></div>
+  </div>
+
+  <script>
+    feather.replace();
+
+    document.getElementById("userName").innerText = localStorage.getItem("name") || "User";
+
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    async function fetchLostItems() {
+      const search = document.getElementById("searchInput").value;
+      const category = document.getElementById("categoryFilter").value;
+      const sortBy = document.getElementById("sortBy").value;
+
+      const url = new URL("http://localhost:5000/api/lost-items");
+      const params = {
+        search,
+        category,
+        sortBy,
+        page: currentPage,
+        limit: itemsPerPage
+      };
+      url.search = new URLSearchParams(params).toString();
+
+      try {
+        const response = await fetch(url);
+        const items = await response.json();
+        displayItems(items);
+      } catch (err) {
+        console.error("Error fetching lost items:", err);
+      }
+    }
+
+    function displayItems(items) {
+      const container = document.getElementById("lostItemsContainer");
+      if (!items.length) {
+        container.innerHTML = "<p class='text-center text-gray-600'>No lost items found.</p>";
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="item-card">
+          <h3 class="text-2xl font-semibold text-blue-600">${item.item_name}</h3>
+          <p><strong>Category:</strong> ${item.category}</p>
+          <p><strong>Date:</strong> ${item.date}</p>
+          <p><strong>Location:</strong> ${item.location}</p>
+          <p><strong>Description:</strong> ${item.description}</p>
+          <img src="http://localhost:5000${item.image}" alt="${item.item_name}" class="item-image"/>
+        </div>
+      `).join("");
+
+      setupPagination();
+    }
+
+    function setupPagination() {
+      const paginationContainer = document.getElementById("paginationControls");
+      paginationContainer.innerHTML = `
+        <button class="pagination-btn" onclick="changePage(-1)">Previous</button>
+        <span class="mx-4">Page ${currentPage}</span>
+        <button class="pagination-btn" onclick="changePage(1)">Next</button>
+      `;
+    }
+
+    function changePage(direction) {
+      currentPage += direction;
+      if (currentPage < 1) currentPage = 1; // Prevent going to negative page
+      fetchLostItems();
+    }
+
+    fetchLostItems();
+  </script>
+</body>
+</html>

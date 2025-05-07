@@ -1,0 +1,305 @@
+<!--<!DOCTYPE html>
+<html>
+<head>
+  <title>Found Items</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .item { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    .item img { max-width: 100px; margin-top: 5px; }
+    .claim-btn { margin-top: 10px; padding: 5px 10px; }
+    .claimed-label { background-color: #ccc; color: #333; padding: 5px 10px; border: none; cursor: not-allowed; margin-top: 10px; }
+    .filter-section { margin-bottom: 15px; }
+    .filter-section input, .filter-section select { margin-right: 10px; padding: 5px; }
+  </style>
+</head>
+<body>
+
+  
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="my-items.html">My Items</a></li>
+      <li><a href="all-items.html">All Items</a></li>
+      <li><a href="lost.html">Lost</a></li>
+      <li><a href="found.html">Found</a></li>
+      <li><a href="raise-concern.html">Raise a Concern</a></li>
+      <li><a href="helpers.html">Helpers</a></li>
+      <li><a href="claimers.html">Claimers</a></li>
+      <li><a href="index.html" onclick="localStorage.clear()">Logout</a></li>
+    </ul>
+  </nav>
+
+  
+  <div class="container">
+    <h2>Found Items</h2>
+    <p>Welcome <strong id="userName"></strong>, these are items reported as found:</p>
+
+    <div class="filter-section">
+      <input type="text" id="searchBox" placeholder="Search by item name..." oninput="fetchItems()">
+      <label for="statusFilter">Filter by Status:</label>
+      <select id="statusFilter" onchange="fetchItems()">
+        <option value="all">All</option>
+        <option value="pending">Pending</option>
+        <option value="found">Found</option>
+      </select>
+    </div>
+
+    <div id="itemsContainer"></div>
+  </div>
+
+  <script>
+    document.getElementById("userName").innerText = localStorage.getItem("name") || "User";
+
+    let claimedItems = [];
+
+    async function fetchClaimedItems() {
+      const email = localStorage.getItem("email");
+      const res = await fetch(`http://localhost:5000/api/claimed-items?email=${email}`);
+      const data = await res.json();
+      if (data.items) {
+        claimedItems = data.items.map(item => item.concern_id);
+      }
+    }
+
+    async function fetchItems() {
+      await fetchClaimedItems();
+
+      const res = await fetch("http://localhost:5000/api/found-items");
+      const data = await res.json();
+
+      const statusFilter = document.getElementById("statusFilter").value;
+      const searchTerm = document.getElementById("searchBox").value.toLowerCase();
+
+      let items = data.items || [];
+
+      if (statusFilter !== "all") {
+        items = items.filter(item => item.status === statusFilter);
+      }
+
+      if (searchTerm) {
+        items = items.filter(item => item.item_name.toLowerCase().includes(searchTerm));
+      }
+
+      displayItems(items);
+    }
+
+    function displayItems(items) {
+      const container = document.getElementById("itemsContainer");
+      container.innerHTML = "";
+
+      if (items.length === 0) {
+        container.innerHTML = "<p>No items found.</p>";
+        return;
+      }
+
+      items.forEach(item => {
+        const alreadyClaimed = claimedItems.includes(item.id);
+        const formattedDate = new Date(item.date).toISOString().split("T")[0];
+
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <p><strong>Item:</strong> ${item.item_name}</p>
+          <p><strong>Category:</strong> ${item.category}</p>
+          <p><strong>Date:</strong> ${formattedDate}</p>
+          <p><strong>Location:</strong> ${item.location}</p>
+          <p><strong>Description:</strong> ${item.description}</p>
+          ${item.image ? `<img src="http://localhost:5000${item.image}" alt="Item Image">` : ""}
+          ${
+            alreadyClaimed
+              ? `<button class="claimed-label" disabled>Already Claimed</button>`
+              : `<button class="claim-btn" onclick="claimItem(${item.id})">Claim</button>`
+          }
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function claimItem(id) {
+      const email = localStorage.getItem("email");
+      const res = await fetch("http://localhost:5000/api/claim-item", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ concern_id: id, email })
+      });
+
+      const result = await res.json();
+      alert(result.message);
+      fetchItems();
+    }
+
+    fetchItems();
+  </script>
+
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Found Items</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center">
+    <ul class="flex flex-wrap gap-16 text-gray-700 font-medium">
+      <h1 class="text-xl font-bold text-blue-600">findIT</h1>
+      <li class="flex items-center gap-1">
+        <i data-feather="home" class="w-4 h-4"></i>
+        <a href="index.html" class="hover:text-blue-500">Home</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="grid" class="w-4 h-4"></i>
+        <a href="my-items.html" class="hover:text-blue-500">My Items</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="box" class="w-4 h-4"></i>
+        <a href="all-items.html" class="hover:text-blue-500">All Items</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="alert-triangle" class="w-4 h-4"></i>
+        <a href="lost.html" class="hover:text-blue-500">Lost</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="search" class="w-4 h-4"></i>
+        <a href="found.html" class="hover:text-blue-500">Found</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="edit-3" class="w-4 h-4"></i>
+        <a href="raise-concern.html" class="hover:text-blue-500">Raise a Concern</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="users" class="w-4 h-4"></i>
+        <a href="helpers.html" class="hover:text-blue-500">Helpers</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="user-check" class="w-4 h-4"></i>
+        <a href="claimers.html" class="hover:text-blue-500">Claimers</a>
+      </li>
+      <li class="flex items-center gap-1">
+        <i data-feather="log-out" class="w-4 h-4"></i>
+        <a href="index.html" onclick="localStorage.clear()" class="hover:text-red-500">Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Container -->
+  <div class="max-w-4xl mx-auto p-6">
+    <h2 class="text-2xl font-bold mb-2">Found Items</h2>
+    <p class="mb-4">Welcome <strong id="userName" class="text-blue-600"></strong>, these are items reported as found:</p>
+
+    <!-- Filters -->
+    <div class="bg-white p-4 rounded-lg shadow mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div class="flex items-center gap-2 w-full md:w-1/3">
+        <i class="fas fa-search text-gray-600"></i>
+        <input type="text" id="searchBox" placeholder="Search by item name..." class="border p-2 rounded w-full" oninput="fetchItems()">
+      </div>
+
+      <div class="flex items-center gap-2 w-full md:w-1/4">
+        <i class="fas fa-filter text-gray-600"></i>
+        <select id="statusFilter" class="border p-2 rounded w-full" onchange="fetchItems()">
+          <option value="all">All</option>
+          <option value="pending">Pending</option>
+          <option value="found">Found</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Items Display -->
+    <div id="itemsContainer" class="grid gap-4"></div>
+  </div>
+
+  <script>
+    // Initialize Feather icons
+    feather.replace();
+
+    document.getElementById("userName").innerText = localStorage.getItem("name") || "User";
+    let claimedItems = [];
+
+    async function fetchClaimedItems() {
+      const email = localStorage.getItem("email");
+      const res = await fetch(`http://localhost:5000/api/claimed-items?email=${email}`);
+      const data = await res.json();
+      if (data.items) {
+        claimedItems = data.items.map(item => item.concern_id);
+      }
+    }
+
+    async function fetchItems() {
+      await fetchClaimedItems();
+      const res = await fetch("http://localhost:5000/api/found-items");
+      const data = await res.json();
+
+      const statusFilter = document.getElementById("statusFilter").value;
+      const searchTerm = document.getElementById("searchBox").value.toLowerCase();
+
+      let items = data.items || [];
+
+      if (statusFilter !== "all") {
+        items = items.filter(item => item.status === statusFilter);
+      }
+
+      if (searchTerm) {
+        items = items.filter(item => item.item_name.toLowerCase().includes(searchTerm));
+      }
+
+      displayItems(items);
+    }
+
+    function displayItems(items) {
+      const container = document.getElementById("itemsContainer");
+      container.innerHTML = "";
+
+      if (items.length === 0) {
+        container.innerHTML = "<p>No items found.</p>";
+        return;
+      }
+
+      items.forEach(item => {
+        const alreadyClaimed = claimedItems.includes(item.id);
+        const formattedDate = new Date(item.date).toISOString().split("T")[0];
+
+        const div = document.createElement("div");
+        div.className = "bg-white rounded-lg shadow p-4";
+
+        div.innerHTML = `
+          <p><strong>Item:</strong> ${item.item_name}</p>
+          <p><strong>Category:</strong> ${item.category}</p>
+          <p><strong>Date:</strong> ${formattedDate}</p>
+          <p><strong>Location:</strong> ${item.location}</p>
+          <p><strong>Description:</strong> ${item.description}</p>
+          ${item.image ? `<img src="http://localhost:5000${item.image}" alt="Item Image" class="mt-2 max-w-[120px] rounded">` : ""}
+          ${
+            alreadyClaimed
+              ? `<button class="mt-4 bg-gray-300 text-gray-700 px-4 py-2 rounded cursor-not-allowed" disabled><i class="fas fa-lock"></i> Already Claimed</button>`
+              : `<button class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onclick="claimItem(${item.id})"><i class="fas fa-hand-paper"></i> Claim</button>`
+          }
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function claimItem(id) {
+      const email = localStorage.getItem("email");
+      const res = await fetch("http://localhost:5000/api/claim-item", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ concern_id: id, email })
+      });
+
+      const result = await res.json();
+      alert(result.message);
+      fetchItems();
+    }
+
+    fetchItems();
+  </script>
+
+</body>
+</html>
