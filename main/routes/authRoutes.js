@@ -2,7 +2,7 @@
 console.log("authRoutes.js loaded");
 
 const express = require('express');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const db = require('../db.config'); // MySQL DB config
 const multer = require('multer'); // For handling file uploads
 const path = require('path');
