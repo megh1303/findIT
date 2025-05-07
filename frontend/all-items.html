@@ -1,139 +1,3 @@
-<!--<!DOCTYPE html>
-<html>
-<head>
-  <title>All Items</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .item { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
-    .item img { max-width: 100px; }
-    .filters { margin-bottom: 20px; }
-  </style>
-</head>
-<body>
-  <nav>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="my-items.html">My Items</a></li>
-      <li><a href="all-items.html">All Items</a></li>
-      <li><a href="lost.html">Lost</a></li>
-      <li><a href="found.html">Found</a></li>
-      <li><a href="raise-concern.html">Raise a Concern</a></li>
-      <li><a href="helpers.html">Helpers</a></li>
-      <li><a href="claimers.html">Claimers</a></li>
-      <li><a href="index.html" onclick="localStorage.clear()">Logout</a></li>
-    </ul>
-  </nav>
-
-  <div class="container">
-    <h2>All Lost & Found Items</h2>
-    <p>Welcome <strong id="userName"></strong></p>
-
-    <div class="filters">
-      <input type="text" id="searchInput" placeholder="Search by item name or location" oninput="applyFilters()">
-      
-      <select id="statusFilter" onchange="applyFilters()">
-        <option value="all">All Status</option>
-        <option value="lost">Lost</option>
-        <option value="found">Found</option>
-      </select>
-
-      <select id="categoryFilter" onchange="applyFilters()">
-        <option value="all">All Categories</option>
-        <option value="Electronics">Electronics</option>
-        <option value="Books">Books</option>
-        <option value="Accessories">Accessories</option>
-        <option value="Others">Others</option>
-      </select>
-
-      <select id="sortFilter" onchange="applyFilters()">
-        <option value="newest">Newest First</option>
-        <option value="oldest">Oldest First</option>
-      </select>
-    </div>
-
-    <div id="itemsContainer"></div>
-  </div>
-
-  <script>
-    document.getElementById("userName").innerText = localStorage.getItem("name") || "User";
-
-    let allItems = [];
-
-    async function fetchItems() {
-      try {
-        const res = await fetch("http://localhost:5000/api/all-items");
-        const data = await res.json();
-        allItems = data.items || [];
-        applyFilters();
-      } catch (err) {
-        console.error("Failed to fetch items", err);
-        alert("Could not load items.");
-      }
-    }
-
-    function applyFilters() {
-      const search = document.getElementById("searchInput").value.toLowerCase();
-      const status = document.getElementById("statusFilter").value;
-      const category = document.getElementById("categoryFilter").value;
-      const sort = document.getElementById("sortFilter").value;
-
-      let filtered = [...allItems];
-
-      if (search) {
-        filtered = filtered.filter(item =>
-          item.item_name.toLowerCase().includes(search) ||
-          item.location.toLowerCase().includes(search)
-        );
-      }
-
-      if (status !== "all") {
-        filtered = filtered.filter(item => item.status === status);
-      }
-
-      if (category !== "all") {
-        filtered = filtered.filter(item => item.category === category);
-      }
-
-      filtered.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return sort === "newest" ? dateB - dateA : dateA - dateB;
-      });
-
-      displayItems(filtered);
-    }
-
-    function displayItems(items) {
-      const container = document.getElementById("itemsContainer");
-      container.innerHTML = "";
-
-      if (items.length === 0) {
-        container.innerHTML = "<p>No items match your filters.</p>";
-        return;
-      }
-
-      items.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "item";
-        const formattedDate = new Date(item.date).toISOString().split("T")[0];
-        div.innerHTML = `
-          <p><strong>Item:</strong> ${item.item_name}</p>
-          <p><strong>Category:</strong> ${item.category}</p>
-          <p><strong>Date:</strong> ${formattedDate}</p>
-          <p><strong>Location:</strong> ${item.location}</p>
-          <p><strong>Description:</strong> ${item.description}</p>
-          <p><strong>Status:</strong> ${item.status}</p>
-          ${item.image ? `<img src="http://localhost:5000${item.image}" alt="Item Image">` : ''}
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    fetchItems();
-  </script>
-</body>
-</html>
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -251,7 +115,8 @@
     <div id="itemsContainer" class="space-y-6"></div>
   </div>
 
-  <script>
+  <script type="module">
+    import BACKEND_URL from './config.js';
     feather.replace();
 
     document.getElementById("userName").innerText = localStorage.getItem("name") || "User";
@@ -260,7 +125,7 @@
 
     async function fetchItems() {
       try {
-        const res = await fetch("http://localhost:5000/api/all-items");
+        const res = await fetch(`${BACKEND_URL}/api/all-items`);
         const data = await res.json();
         allItems = data.items || [];
         applyFilters();
@@ -322,7 +187,7 @@
           <p><strong>Location:</strong> ${item.location}</p>
           <p><strong>Description:</strong> ${item.description}</p>
           <p><strong>Status:</strong> ${item.status}</p>
-          ${item.image ? `<img src="http://localhost:5000${item.image}" alt="Item Image" class="w-32 h-32 object-cover mt-4">` : ''}
+          ${item.image ? `<img src="${BACKEND_URL}${item.image}" alt="Item Image" class="w-32 h-32 object-cover mt-4">` : ''}
         `;
         container.appendChild(div);
       });
