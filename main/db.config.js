@@ -1,11 +1,10 @@
 const mysql = require('mysql');
 
-// Setup MySQL connection
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root', // your MySQL username
-  password: 'Anjali@21', // your MySQL password
-  database: 'findit_db' // your database name
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME
 });
 
 db.connect(err => {
