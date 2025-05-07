@@ -20,22 +20,6 @@ app.get('/signin', (req, res) => {
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve all frontend files
-app.use(express.static(path.join(__dirname, '../frontend')));
-
-// Serve specific frontend pages
-app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend', 'Dashboard.html'));
-});
-
-app.get('/lost', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend', 'lost.html'));
-});
-
-app.get('/found', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend', 'found.html'));
-});
-
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');  // Add this line
